@@ -20,7 +20,8 @@
     "url": "https://github.com/ayubov/project-lvl2-s129/issues"
   },
   "dependencies": {
-    "commander": "*"
+    "commander": "*",
+    "lodash": "*"
   },
   "devDependencies": {
     "babel-cli": "*",
