@@ -4,7 +4,7 @@
   "description": "Configuration files diff",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
     "babel-node": "babel-node",
     "build": "NODE_ENV=production babel src --out-dir dist --source-maps inline",
     "prepublish": "npm run build",
@@ -27,11 +27,15 @@
     "babel-cli": "*",
     "babel-core": "*",
     "babel-eslint": "*",
+    "babel-jest": "*",
     "babel-preset-env": "*",
     "babel-preset-stage-0": "*",
     "eslint": "*",
     "eslint-config-airbnb-base": "*",
-    "eslint-plugin-import": "*"
+    "eslint-plugin-import": "*",
+    "eslint-plugin-jest": "*",
+    "jest": "^21",
+    "jest-cli": "*"
   },
   "bin": {
     "gendiff": "dist/bin/gendiff.js"
