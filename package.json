@@ -1,6 +1,6 @@
 {
   "name": "diffgen",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Configuration files diff",
   "main": "index.js",
   "scripts": {
