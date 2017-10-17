@@ -4,7 +4,7 @@
   "description": "Configuration files diff",
   "main": "index.js",
   "scripts": {
-    "test": "jest --watch",
+    "test": "jest --watchAll",
     "babel-node": "babel-node",
     "build": "NODE_ENV=production babel src --out-dir dist --source-maps inline",
     "prepublish": "npm run build",
