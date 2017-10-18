@@ -1,4 +1,5 @@
 import fs from 'fs';
+import _ from 'lodash';
 
 export default (firstConfigPath, secondConfigPath) => {
   const firstConfigContentString = fs.readFileSync(firstConfigPath, 'utf8');
@@ -6,22 +7,17 @@ export default (firstConfigPath, secondConfigPath) => {
   const firstConfigContentObject = JSON.parse(firstConfigContentString);
   const secondConfigContentObject = JSON.parse(secondConfigContentString);
 
-  const newProperties = Object.keys(secondConfigContentObject)
-    .filter(key => !Object.keys(firstConfigContentObject).includes(key))
-    .reduce((acc, key) => ({ ...acc, [`+ ${key}`]: secondConfigContentObject[key] }), {});
-
-  const totalDiffObj = Object.keys(firstConfigContentObject)
-    .reduce((acc, key) => {
+  const unionKeys = _.union(Object.keys(firstConfigContentObject), Object.keys(secondConfigContentObject));
+  const totalDiffObj = unionKeys.reduce((acc, key) => {
       if (firstConfigContentObject[key] === secondConfigContentObject[key]) {
-        return { ...acc, [`  ${key}`]: firstConfigContentObject[key] };
-      }
-      if (!secondConfigContentObject[key]) {
-        return { ...acc, [`- ${key}`]: firstConfigContentObject[key] };
-      }
-      return { ...acc, [`+ ${key}`]: secondConfigContentObject[key], [`- ${key}`]: firstConfigContentObject[key] };
-    }, newProperties);
-
-  const totalDiffStr = ['{', ...Object.keys(totalDiffObj).map(key => `${key}: ${totalDiffObj[key]}`), '}'].join('\n');
-
+          return acc.concat(`  ${key}: ${firstConfigContentObject[key]}`);
+      } else if (!firstConfigContentObject[key]) {
+          return acc.concat(`+ ${key}: ${secondConfigContentObject[key]}`);
+      } else if (!secondConfigContentObject[key]) {
+          return acc.concat(`- ${key}: ${firstConfigContentObject[key]}`);
+      } else return acc.concat(`+ ${key}: ${secondConfigContentObject[key]}`, `- ${key}: ${firstConfigContentObject[key]}`);
+      }, []);
+  const totalDiffStr = ['{', ...totalDiffObj, '}'].join('\n');
+  
   return totalDiffStr;
 };
