@@ -2,22 +2,23 @@ import fs from 'fs';
 import _ from 'lodash';
 
 export default (firstConfigPath, secondConfigPath) => {
-  const firstConfigContentString = fs.readFileSync(firstConfigPath, 'utf8');
-  const secondConfigContentString = fs.readFileSync(secondConfigPath, 'utf8');
-  const firstConfigContentObject = JSON.parse(firstConfigContentString);
-  const secondConfigContentObject = JSON.parse(secondConfigContentString);
+  const firstConfigContentStr = fs.readFileSync(firstConfigPath, 'utf8');
+  const secondConfigContentStr = fs.readFileSync(secondConfigPath, 'utf8');
+  const firstConfigContent = JSON.parse(firstConfigContentStr);
+  const secondConfigContent = JSON.parse(secondConfigContentStr);
 
-  const unionKeys = _.union(Object.keys(firstConfigContentObject), Object.keys(secondConfigContentObject));
+  const unionKeys = _.union(Object.keys(firstConfigContent), Object.keys(secondConfigContent));
   const totalDiffObj = unionKeys.reduce((acc, key) => {
-      if (firstConfigContentObject[key] === secondConfigContentObject[key]) {
-          return acc.concat(`  ${key}: ${firstConfigContentObject[key]}`);
-      } else if (!firstConfigContentObject[key]) {
-          return acc.concat(`+ ${key}: ${secondConfigContentObject[key]}`);
-      } else if (!secondConfigContentObject[key]) {
-          return acc.concat(`- ${key}: ${firstConfigContentObject[key]}`);
-      } else return acc.concat(`+ ${key}: ${secondConfigContentObject[key]}`, `- ${key}: ${firstConfigContentObject[key]}`);
-      }, []);
+    if (firstConfigContent[key] === secondConfigContent[key]) {
+      return acc.concat(`  ${key}: ${firstConfigContent[key]}`);
+    } if (!firstConfigContent[key]) {
+      return acc.concat(`+ ${key}: ${secondConfigContent[key]}`);
+    } if (!secondConfigContent[key]) {
+      return acc.concat(`- ${key}: ${firstConfigContent[key]}`);
+    }
+    return acc.concat(`+ ${key}: ${secondConfigContent[key]}`, `- ${key}: ${firstConfigContent[key]}`);
+  }, []);
   const totalDiffStr = ['{', ...totalDiffObj, '}'].join('\n');
-  
+
   return totalDiffStr;
 };
