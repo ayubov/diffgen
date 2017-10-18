@@ -20,3 +20,13 @@ test('yamlDiff', () => {
 + verbose: true
 }`);
 });
+
+test('iniDiff', () => {
+  expect(genDiff('__tests__/__fixtures__/first.ini', '__tests__/__fixtures__/second.ini')).toBe(`{
+  host: hexlet.io
++ timeout: 20
+- timeout: 50
+- proxy: 123.234.53.22
++ verbose: true
+}`);
+});

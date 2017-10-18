@@ -22,7 +22,8 @@
   "dependencies": {
     "commander": "*",
     "lodash": "*",
-    "js-yaml": "*"
+    "js-yaml": "*",
+    "ini": "*"
   },
   "devDependencies": {
     "babel-cli": "*",

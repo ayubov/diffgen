@@ -3,6 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import parseJson from './json';
 import parseYaml from './yaml';
+import parseIni from './ini';
 
 
 export default (firstConfigPath, secondConfigPath) => {
@@ -12,6 +13,7 @@ export default (firstConfigPath, secondConfigPath) => {
   const parse = {
     '.json': (...configs) => parseJson(...configs),
     '.yml': (...configs) => parseYaml(...configs),
+    '.ini': (...configs) => parseIni(...configs),
   };
 
   const [firstConfigContent, secondConfigContent] = parse[format](firstConfig, secondConfig);
