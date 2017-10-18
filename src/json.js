@@ -1,9 +1,5 @@
-import fs from 'fs';
-
-export default (firstConfigPath, secondConfigPath) => {
-  const firstConfigContentStr = fs.readFileSync(firstConfigPath, 'utf8');
-  const secondConfigContentStr = fs.readFileSync(secondConfigPath, 'utf8');
-  const firstConfigContent = JSON.parse(firstConfigContentStr);
-  const secondConfigContent = JSON.parse(secondConfigContentStr);
+export default (firstConfig, secondConfig) => {
+  const firstConfigContent = JSON.parse(firstConfig);
+  const secondConfigContent = JSON.parse(secondConfig);
   return [firstConfigContent, secondConfigContent];
 };
