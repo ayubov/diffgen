@@ -8,5 +8,5 @@ commander
   .arguments('<firstConfig> <secondConfig>')
   .option('-f, --format [type]', 'output format')
   .description('Compares two configuration files and shows a difference.')
-  .action((firstConfig, secondConfig) => jsonDiff(firstConfig, secondConfig))
+  .action((firstConfig, secondConfig) => console.log(jsonDiff(firstConfig, secondConfig)))
   .parse(process.argv);
