@@ -23,6 +23,5 @@ export default (firstConfigPath, secondConfigPath) => {
 
   const totalDiffStr = ['{', ...Object.keys(totalDiffObj).map(key => `${key}: ${totalDiffObj[key]}`), '}'].join('\n');
 
-  console.log(totalDiffStr);
   return totalDiffStr;
 };
