@@ -1,22 +1,21 @@
 import _ from 'lodash';
 import fs from 'fs';
 import path from 'path';
-import parseJson from './json';
-import parseYaml from './yaml';
-import parseIni from './ini';
-
+import ini from 'ini';
+import yaml from 'js-yaml';
 
 export default (firstConfigPath, secondConfigPath) => {
   const firstConfig = fs.readFileSync(firstConfigPath, 'utf8');
   const secondConfig = fs.readFileSync(secondConfigPath, 'utf8');
   const format = path.extname(firstConfigPath);
   const parse = {
-    '.json': (...configs) => parseJson(...configs),
-    '.yml': (...configs) => parseYaml(...configs),
-    '.ini': (...configs) => parseIni(...configs),
+    '.json': JSON.parse,
+    '.yml': yaml.safeLoad,
+    '.ini': ini.parse,
   };
 
-  const [firstConfigContent, secondConfigContent] = parse[format](firstConfig, secondConfig);
+  const firstConfigContent = parse[format](firstConfig);
+  const secondConfigContent = parse[format](secondConfig);
 
   const unionKeys = _.union(Object.keys(firstConfigContent), Object.keys(secondConfigContent));
   const totalDiffObj = unionKeys.reduce((acc, key) => {
