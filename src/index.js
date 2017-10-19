@@ -20,13 +20,13 @@ export default (firstConfigPath, secondConfigPath) => {
   const unionKeys = _.union(Object.keys(firstConfigContent), Object.keys(secondConfigContent));
   const totalDiffObj = unionKeys.reduce((acc, key) => {
     if (firstConfigContent[key] === secondConfigContent[key]) {
-      return acc.concat(`  ${key}: ${firstConfigContent[key]}`);
+      return [...acc, `  ${key}: ${firstConfigContent[key]}`];
     } if (!firstConfigContent[key]) {
-      return acc.concat(`+ ${key}: ${secondConfigContent[key]}`);
+      return [...acc, `+ ${key}: ${secondConfigContent[key]}`];
     } if (!secondConfigContent[key]) {
-      return acc.concat(`- ${key}: ${firstConfigContent[key]}`);
+      return [...acc, `- ${key}: ${firstConfigContent[key]}`];
     }
-    return acc.concat(`+ ${key}: ${secondConfigContent[key]}`, `- ${key}: ${firstConfigContent[key]}`);
+    return [...acc, `+ ${key}: ${secondConfigContent[key]}`, `- ${key}: ${firstConfigContent[key]}`];
   }, []);
   const totalDiffStr = ['{', ...totalDiffObj, '}'].join('\n');
 
