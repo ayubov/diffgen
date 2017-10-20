@@ -1,8 +1,8 @@
-import _ from 'lodash';
 import fs from 'fs';
 import path from 'path';
 import ini from 'ini';
 import yaml from 'js-yaml';
+import compare from './compare';
 
 const parsers = {
   '.json': JSON.parse,
@@ -16,19 +16,5 @@ export default (firstConfigPath, secondConfigPath) => {
   const format = path.extname(firstConfigPath);
   const firstConfigContent = parsers[format](firstConfig);
   const secondConfigContent = parsers[format](secondConfig);
-
-  const unionKeys = _.union(Object.keys(firstConfigContent), Object.keys(secondConfigContent));
-  const totalDiffObj = unionKeys.reduce((acc, key) => {
-    if (firstConfigContent[key] === secondConfigContent[key]) {
-      return [...acc, `  ${key}: ${firstConfigContent[key]}`];
-    } if (!firstConfigContent[key]) {
-      return [...acc, `+ ${key}: ${secondConfigContent[key]}`];
-    } if (!secondConfigContent[key]) {
-      return [...acc, `- ${key}: ${firstConfigContent[key]}`];
-    }
-    return [...acc, `+ ${key}: ${secondConfigContent[key]}`, `- ${key}: ${firstConfigContent[key]}`];
-  }, []);
-  const totalDiffStr = ['{', ...totalDiffObj, '}'].join('\n');
-
-  return totalDiffStr;
+  return compare(firstConfigContent, secondConfigContent);
 };
