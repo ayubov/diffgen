@@ -4,7 +4,6 @@ export const parse = (first, second, parentPath = '') => {
   const unionKeys = _.union(Object.keys(first), Object.keys(second));
   const ast = unionKeys.reduce((acc, key) => {
     if (_.isEqual(first, second)) {
-      console.log(`key: ${key}`);
       return [...acc, {
         name: 'same',
         key,
@@ -68,18 +67,15 @@ export const render = (tree) => {
           if (obj.children !== null) {
             return [...acc, `${'  '.repeat(indent)}  ${obj.key}: ${processAst(obj.children, indent + 2)}`];
           }
-          console.log(`obj.key: ${obj.key}, obj.firstValue:${obj.firstValue} `);
           return [...acc, `${'  '.repeat(indent)}  ${obj.key}: ${obj.firstValue}`];
         }
         if (obj.name === 'removed') {
-          console.log(`obj.key: ${obj.key}, 1st value:${obj.firstValue}, obj.children: ${obj.children}`);
           if (obj.children !== null) {
             return [...acc, `${'  '.repeat(indent)}- ${obj.key}: ${processAst(obj.children, indent + 2)}`];
           }
           return [...acc, `${'  '.repeat(indent)}- ${obj.key}: ${obj.firstValue}`];
         }
         if (obj.name === 'added') {
-          console.log(`obj.children:${obj.children}, obj.key: ${obj.key}`);
           if (obj.children !== null) {
             return [...acc, `${'  '.repeat(indent)}+ ${obj.key}: ${processAst(obj.children, indent + 2)}`];
           }

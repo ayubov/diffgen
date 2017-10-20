@@ -27,6 +27,5 @@ export default (firstConfigPath, secondConfigPath) => {
   const format = path.extname(firstConfigPath);
   const firstConfigContent = parsers[format](firstConfig);
   const secondConfigContent = parsers[format](secondConfig);
-  console.log(firstConfigContent);
   return render(parse(firstConfigContent, secondConfigContent));
 };
