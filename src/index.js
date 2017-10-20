@@ -3,7 +3,7 @@ import path from 'path';
 import ini from 'ini';
 import yaml from 'js-yaml';
 import _ from 'lodash';
-import compare from './compare';
+import { parse, render } from './ast';
 
 const optimizeIni = config => _.reduce(config, (acc, value, key) => {
   if (value instanceof Object) {
@@ -27,5 +27,6 @@ export default (firstConfigPath, secondConfigPath) => {
   const format = path.extname(firstConfigPath);
   const firstConfigContent = parsers[format](firstConfig);
   const secondConfigContent = parsers[format](secondConfig);
-  return compare(firstConfigContent, secondConfigContent);
+  console.log(firstConfigContent);
+  return render(parse(firstConfigContent, secondConfigContent));
 };
