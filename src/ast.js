@@ -3,45 +3,36 @@ import _ from 'lodash';
 export const parse = (first, second, parentPath = '') => {
   const unionKeys = _.union(Object.keys(first), Object.keys(second));
   const ast = unionKeys.reduce((acc, key) => {
-    if (_.isEqual(first, second)) {
+    if (_.isEqual(first[key], second[key])) {
       return [...acc, {
         name: 'same',
         key,
-        path: [parentPath, key],
-        firstValue: first[key],
-        children:
-        _.isObject(first[key]) ? parse(first[key], first[key], [...parentPath, key]) : null,
-      }];
-    }
-    if (first[key] === second[key]) {
-      return [...acc, {
-        name: 'same', key, path: [parentPath, key], firstValue: first[key], children: null,
-      }];
-    }
-
-    if (!first[key]) {
-      return [...acc, {
-        name: 'added',
-        key,
-        path: [parentPath, key],
-        secondValue: second[key],
-        children:
-        _.isObject(second[key]) ? parse(second[key], second[key], [...parentPath, key]) : null,
-      }];
-    }
-    if (!second[key]) {
-      return [...acc, {
-        name: 'removed',
-        key,
-        path: [parentPath, key],
-        firstValue: first[key],
-        children:
-        _.isObject(first[key]) ? parse(first[key], first[key], [...parentPath, key]) : null,
+        path: [...parentPath, key],
+        value: first[key],
       }];
     }
     if (_.isObject(first[key]) && _.isObject(second[key])) {
       return [...acc, {
-        name: 'same', key, path: [parentPath, key], children: parse(first[key], second[key], [...parentPath, key]),
+        name: 'sameWithChild',
+        key,
+        path: [parentPath, key],
+        children: parse(first[key], second[key], [...parentPath, key]),
+      }];
+    }
+    if (_.isUndefined(first[key])) {
+      return [...acc, {
+        name: 'added',
+        key,
+        path: [...parentPath, key],
+        value: second[key],
+      }];
+    }
+    if (_.isUndefined(second[key])) {
+      return [...acc, {
+        name: 'removed',
+        key,
+        path: [...parentPath, key],
+        value: first[key],
       }];
     }
     return [...acc, {
@@ -50,54 +41,40 @@ export const parse = (first, second, parentPath = '') => {
       path: [parentPath, key],
       firstValue: first[key],
       secondValue: second[key],
-      firstChildren:
-      _.isObject(first[key]) ? parse(first[key], first[key], [...parentPath, key]) : null,
-      secondChildren:
-      _.isObject(second[key]) ? parse(second[key], second[key], [...parentPath, key]) : null,
     }];
   }, []);
   return ast;
 };
 
+const spread = (value, indent) => {
+  if (_.isObject(value)) {
+    const spreadValue = Object.keys(value).reduce((acc, key) =>
+      (_.isObject(value[key]) ? [...acc, spread(value[key], indent + 2)] :
+        [...acc, `${'  '.repeat(indent)}  ${key}: ${value[key]}`]), []);
+    return ['{', spreadValue, `${'  '.repeat(indent).slice(2)}}`].join('\n');
+  }
+  return value;
+};
+
 export const render = (tree) => {
   const processAst = (ast, indent) => {
-    const processedAst = ast.reduce(
-      (acc, obj) => {
-        if (obj.name === 'same') {
-          if (obj.children !== null) {
-            return [...acc, `${'  '.repeat(indent)}  ${obj.key}: ${processAst(obj.children, indent + 2)}`];
-          }
-          return [...acc, `${'  '.repeat(indent)}  ${obj.key}: ${obj.firstValue}`];
-        }
-        if (obj.name === 'removed') {
-          if (obj.children !== null) {
-            return [...acc, `${'  '.repeat(indent)}- ${obj.key}: ${processAst(obj.children, indent + 2)}`];
-          }
-          return [...acc, `${'  '.repeat(indent)}- ${obj.key}: ${obj.firstValue}`];
-        }
-        if (obj.name === 'added') {
-          if (obj.children !== null) {
-            return [...acc, `${'  '.repeat(indent)}+ ${obj.key}: ${processAst(obj.children, indent + 2)}`];
-          }
-          return [...acc, `${'  '.repeat(indent)}+ ${obj.key}: ${obj.secondValue}`];
-        }
-        if (obj.firstChildren !== null && obj.secondChildren !== null) {
-          return [...acc, `${'  '.repeat(indent)}+ ${obj.key}: ${processAst(obj.secondchildren, indent + 2)}`,
-            `${'  '.repeat(indent)}- ${obj.key}: ${processAst(obj.firstChildren, indent + 2)}`];
-        }
-        if (obj.firstChildren !== null) {
-          return [...acc, `${'  '.repeat(indent)}+ ${obj.key}: ${obj.secondValue}`,
-            `${'  '.repeat(indent)}- ${obj.key}: ${processAst(obj.firstChildren, indent + 2)}`];
-        }
-        if (obj.secondChildren !== null) {
-          return [...acc, `${'  '.repeat(indent)}+ ${obj.key}: ${processAst(obj.secondchildren, indent + 2)}`,
-            `${'  '.repeat(indent)}- ${obj.key}: ${obj.firstValue}`];
-        }
-        return [...acc, `${'  '.repeat(indent)}+ ${obj.key}: ${obj.secondValue}`, `${'  '.repeat(indent)}- ${obj.key}: ${obj.firstValue}`];
+    const processedAst = ast.reduce((acc, obj) => {
+      switch (obj.name) {
+        case 'same':
+          return [...acc, `${'  '.repeat(indent)}  ${obj.key}: ${obj.value}`];
+        case 'sameWithChild':
+          return [...acc, `${'  '.repeat(indent)}  ${obj.key}: ${processAst(obj.children, indent + 2)}`];
+        case 'removed':
+          return [...acc, `${'  '.repeat(indent)}- ${obj.key}: ${spread(obj.value, indent + 2)}`];
+        case 'added':
+          return [...acc, `${'  '.repeat(indent)}+ ${obj.key}: ${spread(obj.value, indent + 2)}`];
+        default:
+          return [...acc, `${'  '.repeat(indent)}+ ${obj.key}: ${spread(obj.secondValue, indent + 2)}`,
+            `${'  '.repeat(indent)}- ${obj.key}: ${spread(obj.firstValue, indent + 2)}`];
       }
-      , [],
-    );
+    }, []);
     return ['{', ...processedAst, `${'  '.repeat(indent).slice(2)}}`].join('\n');
   };
   return processAst(tree, 0);
 };
+
