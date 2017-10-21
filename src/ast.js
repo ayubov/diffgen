@@ -8,7 +8,7 @@ export const parse = (first, second, parentPath = '') => {
         type: 'same',
         key,
         path: [...parentPath, key],
-        value: first[key],
+        newValue: first[key],
       }];
     }
     if (_.isObject(first[key]) && _.isObject(second[key])) {
@@ -24,7 +24,7 @@ export const parse = (first, second, parentPath = '') => {
         type: 'added',
         key,
         path: [...parentPath, key],
-        value: second[key],
+        newValue: second[key],
       }];
     }
     if (_.isUndefined(second[key])) {
@@ -32,15 +32,15 @@ export const parse = (first, second, parentPath = '') => {
         type: 'removed',
         key,
         path: [...parentPath, key],
-        value: first[key],
+        oldValue: first[key],
       }];
     }
     return [...acc, {
       type: 'updated',
       key,
       path: [parentPath, key],
-      firstValue: first[key],
-      secondValue: second[key],
+      oldValue: first[key],
+      newValue: second[key],
     }];
   }, []);
   return ast;
@@ -58,23 +58,22 @@ const spread = (value, indent) => {
 
 export const render = (tree) => {
   const processAst = (ast, indent) => {
-    const processedAst = ast.reduce((acc, obj) => {
+    const processedAst = _.flatten(ast.map((obj) => {
       switch (obj.type) {
         case 'same':
-          return [...acc, `${'  '.repeat(indent)}  ${obj.key}: ${obj.value}`];
+          return `${'  '.repeat(indent)}  ${obj.key}: ${obj.newValue}`;
         case 'sameWithChild':
-          return [...acc, `${'  '.repeat(indent)}  ${obj.key}: ${processAst(obj.children, indent + 2)}`];
+          return `${'  '.repeat(indent)}  ${obj.key}: ${processAst(obj.children, indent + 2)}`;
         case 'removed':
-          return [...acc, `${'  '.repeat(indent)}- ${obj.key}: ${spread(obj.value, indent + 2)}`];
+          return `${'  '.repeat(indent)}- ${obj.key}: ${spread(obj.oldValue, indent + 2)}`;
         case 'added':
-          return [...acc, `${'  '.repeat(indent)}+ ${obj.key}: ${spread(obj.value, indent + 2)}`];
+          return `${'  '.repeat(indent)}+ ${obj.key}: ${spread(obj.newValue, indent + 2)}`;
         default:
-          return [...acc, `${'  '.repeat(indent)}+ ${obj.key}: ${spread(obj.secondValue, indent + 2)}`,
-            `${'  '.repeat(indent)}- ${obj.key}: ${spread(obj.firstValue, indent + 2)}`];
+          return [`${'  '.repeat(indent)}+ ${obj.key}: ${spread(obj.newValue, indent + 2)}`,
+            `${'  '.repeat(indent)}- ${obj.key}: ${spread(obj.oldValue, indent + 2)}`];
       }
-    }, []);
+    }));
     return ['{', ...processedAst, `${'  '.repeat(indent).slice(2)}}`].join('\n');
   };
   return processAst(tree, 0);
 };
-
