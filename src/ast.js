@@ -5,7 +5,7 @@ export const parse = (first, second, parentPath = '') => {
   const ast = unionKeys.reduce((acc, key) => {
     if (_.isEqual(first[key], second[key])) {
       return [...acc, {
-        name: 'same',
+        type: 'same',
         key,
         path: [...parentPath, key],
         value: first[key],
@@ -13,7 +13,7 @@ export const parse = (first, second, parentPath = '') => {
     }
     if (_.isObject(first[key]) && _.isObject(second[key])) {
       return [...acc, {
-        name: 'sameWithChild',
+        type: 'sameWithChild',
         key,
         path: [parentPath, key],
         children: parse(first[key], second[key], [...parentPath, key]),
@@ -21,7 +21,7 @@ export const parse = (first, second, parentPath = '') => {
     }
     if (_.isUndefined(first[key])) {
       return [...acc, {
-        name: 'added',
+        type: 'added',
         key,
         path: [...parentPath, key],
         value: second[key],
@@ -29,14 +29,14 @@ export const parse = (first, second, parentPath = '') => {
     }
     if (_.isUndefined(second[key])) {
       return [...acc, {
-        name: 'removed',
+        type: 'removed',
         key,
         path: [...parentPath, key],
         value: first[key],
       }];
     }
     return [...acc, {
-      name: 'updated',
+      type: 'updated',
       key,
       path: [parentPath, key],
       firstValue: first[key],
@@ -59,7 +59,7 @@ const spread = (value, indent) => {
 export const render = (tree) => {
   const processAst = (ast, indent) => {
     const processedAst = ast.reduce((acc, obj) => {
-      switch (obj.name) {
+      switch (obj.type) {
         case 'same':
           return [...acc, `${'  '.repeat(indent)}  ${obj.key}: ${obj.value}`];
         case 'sameWithChild':
