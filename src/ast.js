@@ -1,6 +1,6 @@
 import _ from 'lodash';
 
-export const parse = (first, second, parentPath = '') => {
+export const parse = (first, second, parentPath = []) => {
   const unionKeys = _.union(Object.keys(first), Object.keys(second));
   const ast = unionKeys.reduce((acc, key) => {
     if (_.isEqual(first[key], second[key])) {
@@ -38,7 +38,7 @@ export const parse = (first, second, parentPath = '') => {
     return [...acc, {
       type: 'updated',
       key,
-      path: [parentPath, key],
+      path: [...parentPath, key],
       oldValue: first[key],
       newValue: second[key],
     }];
@@ -56,7 +56,7 @@ const spread = (value, indent) => {
   return value;
 };
 
-export const render = (tree) => {
+export const renderDefault = (tree) => {
   const processAst = (ast, indent) => {
     const processedAst = _.flatten(ast.map((obj) => {
       switch (obj.type) {
@@ -76,4 +76,22 @@ export const render = (tree) => {
     return ['{', ...processedAst, `${'  '.repeat(indent).slice(2)}}`].join('\n');
   };
   return processAst(tree, 0);
+};
+
+export const renderToPlain = (tree) => {
+  const processAst = ast => _.flatten(ast.map((obj) => {
+    switch (obj.type) {
+      case 'same':
+        return '';
+      case 'sameWithChild':
+        return processAst(obj.children);
+      case 'removed':
+        return `    Property '${obj.path.join('.')}' was removed`;
+      case 'added':
+        return `    Property '${obj.path.join('.')}' was added with ${_.isObject(obj.newValue) ? 'complex value' : `value: ${obj.newValue}`}`;
+      default:
+        return `    Property '${obj.path.join('.')}' was updated. From '${obj.oldValue}' to '${obj.newValue}'`;
+    }
+  }));
+  return ['{', ...processAst(tree).filter(e => e !== ''), '}'].join('\n');
 };

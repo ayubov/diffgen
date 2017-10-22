@@ -1,4 +1,3 @@
-
 import genDiff from '../src';
 
 test('.json diff', () => {
@@ -115,3 +114,38 @@ test('.ini diff recursive', () => {
 }`);
 });
 
+test('.json recursive diff in plain format', () => {
+  expect(genDiff('__tests__/__fixtures__/recursiveFirst.json', '__tests__/__fixtures__/recursiveSecond.json', 'plain')).toBe(`{
+    Property 'common.setting2' was removed
+    Property 'common.setting6' was removed
+    Property 'common.setting4' was added with value: blah blah
+    Property 'common.setting5' was added with complex value
+    Property 'group1.baz' was updated. From 'bas' to 'bars'
+    Property 'group2' was removed
+    Property 'group3' was added with complex value
+}`);
+});
+
+test('.yml recursive diff in plain format', () => {
+  expect(genDiff('__tests__/__fixtures__/recursiveFirst.json', '__tests__/__fixtures__/recursiveSecond.json', 'plain')).toBe(`{
+    Property 'common.setting2' was removed
+    Property 'common.setting6' was removed
+    Property 'common.setting4' was added with value: blah blah
+    Property 'common.setting5' was added with complex value
+    Property 'group1.baz' was updated. From 'bas' to 'bars'
+    Property 'group2' was removed
+    Property 'group3' was added with complex value
+}`);
+});
+
+test('.ini recursive diff in plain format', () => {
+  expect(genDiff('__tests__/__fixtures__/recursiveFirst.ini', '__tests__/__fixtures__/recursiveSecond.ini', 'plain')).toBe(`{
+    Property 'common.setting2' was removed
+    Property 'common.setting6' was removed
+    Property 'common.setting4' was added with value: blah blah
+    Property 'common.setting5' was added with complex value
+    Property 'group1.baz' was updated. From 'bas' to 'bars'
+    Property 'group2' was removed
+    Property 'group3' was added with complex value
+}`);
+});
