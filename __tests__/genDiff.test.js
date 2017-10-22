@@ -1,3 +1,4 @@
+// import fs from 'fs';
 import genDiff from '../src';
 
 test('.json diff', () => {
@@ -149,3 +150,10 @@ test('.ini recursive diff in plain format', () => {
     Property 'group3' was added with complex value
 }`);
 });
+/*
+test('.ini recursive diff in json format', () => {
+ expect(genDiff('__tests__/__fixtures__/recursiveFirst.ini',
+ '__tests__/__fixtures__/recursiveSecond.ini', 'json'))
+    .toBe(fs.readFileSync('__tests__/__fixtures__/result.json', 'utf8'));
+});
+*/
