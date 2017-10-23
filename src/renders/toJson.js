@@ -1,5 +1,5 @@
 export default (tree) => {
-  const renderToJson = ast => JSON.stringify(ast.reduce((acc, obj) => {
+  const renderToJson = ast => ast.reduce((acc, obj) => {
     switch (obj.type) {
       case 'same':
         return { ...acc, [obj.key]: obj.newValue };
@@ -12,6 +12,6 @@ export default (tree) => {
       default:
         return { ...acc, [`- ${obj.key}`]: obj.oldValue, [`+ ${obj.key}`]: obj.newValue };
     }
-  }, {}));
-  return renderToJson(tree);
+  }, {});
+  return JSON.stringify(renderToJson(tree));
 };
