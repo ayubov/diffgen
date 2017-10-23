@@ -1,17 +1,11 @@
 export default (tree) => {
-  const renderToJson = ast => ast.reduce((acc, obj) => {
+  const renderToJson = ast => ast.map((obj) => {
     switch (obj.type) {
-      case 'same':
-        return { ...acc, [obj.key]: obj.newValue };
       case 'sameWithChild':
-        return { ...acc, [obj.key]: renderToJson(obj.children) };
-      case 'removed':
-        return { ...acc, [`- ${obj.key}`]: obj.oldValue };
-      case 'added':
-        return { ...acc, [`+ ${obj.key}`]: obj.newValue };
+        return { [obj.key]: renderToJson(obj.children) };
       default:
-        return { ...acc, [`- ${obj.key}`]: obj.oldValue, [`+ ${obj.key}`]: obj.newValue };
+        return { type: obj.type, oldValue: obj.oldValue, newValue: obj.newValue };
     }
-  }, {});
+  });
   return JSON.stringify(renderToJson(tree));
 };

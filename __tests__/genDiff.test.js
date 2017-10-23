@@ -1,4 +1,3 @@
-import fs from 'fs';
 import genDiff from '../src';
 
 const simpleResult = `{
@@ -34,6 +33,8 @@ const recursiveResult = `{
       fee: 100500
   }
 }`;
+
+const jsonResult = '[{"common":[{"type":"same","newValue":"Value 1"},{"type":"removed","oldValue":"200"},{"type":"same","newValue":true},{"type":"removed","oldValue":{"key":"value"}},{"type":"added","newValue":"blah blah"},{"type":"added","newValue":{"key5":"value5"}}]},{"group1":[{"type":"updated","oldValue":"bas","newValue":"bars"},{"type":"same","newValue":"bar"}]},{"type":"removed","oldValue":{"abc":"12345"}},{"type":"added","newValue":{"fee":"100500"}}]';
 
 const plainFormatResult = `{
     Property 'common.setting2' was removed
@@ -86,6 +87,6 @@ test('json format test', () => {
     '__tests__/__fixtures__/recursiveFirst.ini',
     '__tests__/__fixtures__/recursiveSecond.ini', 'json',
   ))
-    .toBe(fs.readFileSync('__tests__/__fixtures__/result.json', 'utf8'));
+    .toBe(jsonResult);
 });
 
