@@ -1,6 +1,6 @@
 {
   "name": "diffgen",
-  "version": "1.0.8",
+  "version": "1.0.8ov",
   "description": "Configuration files diff",
   "main": "index.js",
   "scripts": {
@@ -12,12 +12,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/ayubov/project-lvl2-s129.git"
+    "url": "https://github.com/ayubov/diffgen.git"
   },
   "author": "Alvi Ayubov",
   "license": "BSD-2-Clause",
   "bugs": {
-    "url": "https://github.com/ayubov/project-lvl2-s129/issues"
+    "url": "https://github.com/ayubov/diffgen/issues"
   },
   "dependencies": {
     "commander": "*",
@@ -43,5 +43,5 @@
   "bin": {
     "gendiff": "dist/bin/gendiff.js"
   },
-  "homepage": "https://github.com/ayubov/project-lvl2-s129#readme"
+  "homepage": "https://github.com/ayubov/diffgen#readme"
 }
