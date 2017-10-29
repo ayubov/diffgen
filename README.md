@@ -15,7 +15,7 @@ Supports .json, .yml, .ini inputs and string, JSON and plain outputs.
 
 #### Options:
 > $  -h, --help           output usage information
-> $  -V, --version        output the version number
-> $  -f, --format [type]  Output format
 
-### Example:
+> $  -V, --version        output the version number
+
+> $  -f, --format [type]  Output format
