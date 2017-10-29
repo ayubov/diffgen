@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import colors from 'colors';
 
 const spread = (value, indent) => {
   if (_.isObject(value)) {
@@ -19,12 +20,12 @@ export default (tree) => {
         case 'sameWithChild':
           return `${'  '.repeat(indent)}  ${obj.key}: ${processAst(obj.children, indent + 2)}`;
         case 'removed':
-          return `${'  '.repeat(indent)}- ${obj.key}: ${spread(obj.oldValue, indent + 2)}`;
+          return colors.red(`${'  '.repeat(indent)}- ${obj.key}: ${spread(obj.oldValue, indent + 2)}`);
         case 'added':
-          return `${'  '.repeat(indent)}+ ${obj.key}: ${spread(obj.newValue, indent + 2)}`;
+          return colors.green(`${'  '.repeat(indent)}+ ${obj.key}: ${spread(obj.newValue, indent + 2)}`);
         default:
-          return [`${'  '.repeat(indent)}+ ${obj.key}: ${spread(obj.newValue, indent + 2)}`,
-            `${'  '.repeat(indent)}- ${obj.key}: ${spread(obj.oldValue, indent + 2)}`];
+          return [colors.green(`${'  '.repeat(indent)}+ ${obj.key}: ${spread(obj.newValue, indent + 2)}`),
+            colors.red(`${'  '.repeat(indent)}- ${obj.key}: ${spread(obj.oldValue, indent + 2)}`)];
       }
     }));
     return ['{', ...processedAst, `${'  '.repeat(indent).slice(2)}}`].join('\n');

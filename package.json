@@ -1,6 +1,6 @@
 {
   "name": "diffgen",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "Configuration files diff",
   "main": "index.js",
   "scripts": {
@@ -23,7 +23,8 @@
     "commander": "*",
     "lodash": "*",
     "js-yaml": "*",
-    "ini": "*"
+    "ini": "*",
+    "colors": "*"
   },
   "devDependencies": {
     "babel-cli": "*",
